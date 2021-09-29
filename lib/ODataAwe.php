@@ -56,19 +56,20 @@ class ODataAwe {
 				]);
 			}
 		}
-
-		if(isset($this->functions[$entityset])) {
-			if(is_callable($this->functions[$entityset]['callback'])) {
-				call_user_func($this->functions[$entityset]['callback'],$this,[]);
+		else {
+			if(isset($this->functions[$entityset])) {
+				if(is_callable($this->functions[$entityset]['callback'])) {
+					call_user_func($this->functions[$entityset]['callback'],$this,[]);
+				}
+				else {
+					throw new Exception('Function: '.$this->functions[$entityset]['callback'].' is not callable');
+				}
 			}
 			else {
-				throw new Exception('Function: '.$this->functions[$entityset]['callback'].' is not callable');
+				echo 'EntitySet: '.$entityset.' is not fould';
+				http_response_code(404);
+				exit;
 			}
-		}
-		else {
-			echo 'EntitySet: '.$entityset.' is not fould';
-			http_response_code(404);
-			exit;
 		}
 
 		$context = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'].$this->options['rewritebase'];
