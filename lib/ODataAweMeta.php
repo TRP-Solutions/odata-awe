@@ -64,8 +64,20 @@ trait ODataAweMetaTrait {
 					case 'float':
 						$attribute->value = 'Edm.Decimal';
 						break;
+					case 'bool':
+						$attribute->value = 'Edm.Boolean';
+						break;
 					case 'string':
 						$attribute->value = 'Edm.String';
+						break;
+					case 'datetime':
+						$attribute->value = 'Edm.DateTimeOffset';
+						break;
+					case 'date':
+						$attribute->value = 'Edm.Date';
+						break;
+					case 'time':
+						$attribute->value = 'Edm.TimeOfDay';
 						break;
 				}
 
