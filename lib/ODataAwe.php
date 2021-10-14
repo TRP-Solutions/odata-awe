@@ -33,9 +33,9 @@ class ODataAwe {
 		if(strpos($uri,'/')===0) {
 			$uri = substr($uri,1);
 		}
-		$param = explode('/',$uri);
+		$path = explode('/',$uri);
 
-		foreach($param as $part) {
+		foreach($path as $part) {
 			if($part==='$metadata') {
 				$this->Metadata();
 				return;
@@ -45,7 +45,7 @@ class ODataAwe {
 		header('Content-type: application/json; odata.metadata=minimal');
 		header('OData-Version: 4.0');
 
-		$entityset = !empty($param[0]) ? $param[0] : null;
+		$entityset = !empty($path[0]) ? $path[0] : null;
 
 		if($entityset===null) {
 			foreach($this->functions as $key => $function) {
