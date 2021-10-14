@@ -4,13 +4,16 @@ ODataAwe is licensed under the Apache License 2.0 license
 https://github.com/TRP-Solutions/odata-awe/blob/main/LICENSE
 */
 require_once __DIR__.'/ODataAweMeta.php';
+require_once __DIR__.'/ODataAweParam.php';
 
 class ODataAwe {
 	use ODataAweMetaTrait;
+	use ODataAweParamTrait;
 
 	private $options = null;
 	private $functions = [];
 	private $data = [];
+	private $count = 0;
 
 	public function __construct($options = []) {
 		$this->options = $options;
@@ -33,6 +36,9 @@ class ODataAwe {
 		if(strpos($uri,'/')===0) {
 			$uri = substr($uri,1);
 		}
+		if(strpos($uri,'?')!==false) {
+			$uri = substr($uri,0,strpos($uri,'?'));
+		}
 		$path = explode('/',$uri);
 
 		foreach($path as $part) {
@@ -41,7 +47,6 @@ class ODataAwe {
 				return;
 			}
 		}
-
 		header('Content-type: application/json; odata.metadata=minimal');
 		header('OData-Version: 4.0');
 
@@ -57,9 +62,11 @@ class ODataAwe {
 			}
 		}
 		else {
+			$this->Param($_GET);
+
 			if(isset($this->functions[$entityset])) {
 				if(is_callable($this->functions[$entityset]['callback'])) {
-					call_user_func($this->functions[$entityset]['callback'],$this,[]);
+					call_user_func($this->functions[$entityset]['callback'],$this);
 				}
 				else {
 					throw new Exception('Function: '.$this->functions[$entityset]['callback'].' is not callable');
@@ -78,6 +85,7 @@ class ODataAwe {
 
 		$json = [
 			'@odata.context' => $context,
+			'@odata.count' => $this->count,
 			'value' => $this->data,
 		];
 		echo json_encode($json,JSON_UNESCAPED_SLASHES);
@@ -92,6 +100,10 @@ class ODataAwe {
 	}
 
 	public function addData($data) {
+		if($this->count>=$this->param['top']) {
+			return false;
+		}
+		$this->count++;
 		$this->data[] = $data;
 	}
 }

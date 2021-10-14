@@ -19,7 +19,14 @@ $field = [
 ];
 $odata->addFunction('Staff',$field);
 
-function Staff($odata,$param) {
+function Staff($odata) {
+	$data = [
+		1 => 'Jacob',
+		2 => 'Jesper',
+		3 => 'Jonas',
+		6 => 'Thorbjørn',
+	];
+
 	function line($id,$name) {
 		return [
 			'UserID' => $id,
@@ -34,10 +41,11 @@ function Staff($odata,$param) {
 		];
 	}
 
-	$odata->addData(line(1,'Jacob'));
-	$odata->addData(line(2,'Jesper'));
-	$odata->addData(line(3,'Jonas'));
-	$odata->addData(line(6,'Thorbjørn'));
+	$data = array_slice($data,$odata->getSkip());
+
+	foreach($data as $key => $value) {
+		if($odata->addData(line($key,$value))===false) return;
+	}
 }
 
 $odata->handle();
