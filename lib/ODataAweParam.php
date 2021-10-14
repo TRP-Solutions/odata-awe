@@ -7,19 +7,11 @@ trait ODataAweParamTrait {
 	private $param = [];
 
 	private function Param($input) {
-		if(isset($input['$top'])) {
-			$this->param['top'] = (int) $input['$top'];
-		}
-		else {
-			$this->param['top'] = null;
-		}
-		if(isset($input['$skip'])) {
-			$this->param['skip'] = (int) $input['$skip'];
-		}
-		else {
-			$this->param['skip'] = 0;
-		}
+		$this->param['top'] = isset($input['$top']) ? (int) $input['$top'] : null;
+		$this->param['skip'] = isset($input['$skip']) ? (int) $input['$skip'] : 0;
 		$this->param['count'] = empty($input['$count']) ? false : true;
+		$this->param['select'] = empty($input['$select']) ? null : array_fill_keys(explode(',',$input['$select']),null);
+		$this->param['filter'] = empty($input['$filter']) ? [] : explode(' and ',$input['$filter']);
 
 		return [];
 	}
@@ -29,5 +21,8 @@ trait ODataAweParamTrait {
 	}
 	public function getSkip() {
 		return $this->param['skip'];
+	}
+	public function getSelect() {
+		return $this->param['select'];
 	}
 }

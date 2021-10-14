@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__.'/../lib/ODataAwe.php';
+syslog(LOG_INFO,$_SERVER['REQUEST_URI']);
 
 $options = [
 	'rewritebase' => '/odata-awe/sample',
@@ -28,23 +29,28 @@ function Staff($odata) {
 	];
 
 	function line($id,$name) {
-		return [
-			'UserID' => $id,
-			'UserName' => $name,
-			'Cost' => round($id*31.4159265358979,6),
-			'Account' => strtolower(str_pad('',3,substr($name,0,1))),
-			'Length' => (int) mb_strlen($name),
-			'Active' => $id%2 ? true : false,
-			'LastLogin' => date('c',strtotime('-'.$id.' hours')),
-			'Birthday' => date('Y-m-d',strtotime('2007-01-01 +'.($id*100).' days')),
-			'Break' => date('H:i:s',strtotime('10:00:00 +'.pow(3,$id).' minutes')),
-		];
+		$return = [];
+		$return['UserID'] = $id;
+		$return['UserName'] = $name;
+		$return['Cost'] = round($id*31.4159265358979,6);
+		$return['Account'] = strtolower(str_pad('',3,substr($name,0,1)));
+		$return['Length'] = (int) mb_strlen($name);
+		$return['Active'] = $id%2 ? true : false;
+		$return['LastLogin'] = date('c',strtotime('-'.$id.' hours'));
+		$return['Birthday'] = date('Y-m-d',strtotime('2007-01-01 +'.($id*100).' days'));
+		$return['Break'] = date('H:i:s',strtotime('10:00:00 +'.pow(3,$id).' minutes'));
+		return $return;
 	}
 
 	$data = array_slice($data,$odata->getSkip(),$odata->getTop(),true);
+	$select = $odata->getSelect();
 
 	foreach($data as $key => $value) {
-		if($odata->addData(line($key,$value))===false) return;
+		$line = line($key,$value);
+		if($select) {
+			$line = array_intersect_key($line,$select);
+		}
+		$odata->addData($line);
 	}
 }
 
