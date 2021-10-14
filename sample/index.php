@@ -41,7 +41,7 @@ function Staff($odata) {
 		];
 	}
 
-	$data = array_slice($data,$odata->getSkip());
+	$data = array_slice($data,$odata->getSkip(),$odata->getTop(),true);
 
 	foreach($data as $key => $value) {
 		if($odata->addData(line($key,$value))===false) return;

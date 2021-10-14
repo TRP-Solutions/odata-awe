@@ -47,6 +47,8 @@ class ODataAwe {
 				return;
 			}
 		}
+
+		$this->Param($_GET);
 		header('Content-type: application/json; odata.metadata=minimal');
 		header('OData-Version: 4.0');
 
@@ -62,8 +64,6 @@ class ODataAwe {
 			}
 		}
 		else {
-			$this->Param($_GET);
-
 			if(isset($this->functions[$entityset])) {
 				if(is_callable($this->functions[$entityset]['callback'])) {
 					call_user_func($this->functions[$entityset]['callback'],$this);
@@ -83,11 +83,10 @@ class ODataAwe {
 		if($entityset) $context .= '/'.$entityset;
 		$context .= $entityset ? '/$metadata#'.$entityset : '/$metadata';
 
-		$json = [
-			'@odata.context' => $context,
-			'@odata.count' => $this->count,
-			'value' => $this->data,
-		];
+		$json = [];
+		$json['@odata.context'] = $context;
+		if($this->param['count']) $json['@odata.count'] = $this->count;
+		$json['value'] = $this->data;
 		echo json_encode($json,JSON_UNESCAPED_SLASHES);
 	}
 
@@ -100,9 +99,6 @@ class ODataAwe {
 	}
 
 	public function addData($data) {
-		if($this->count>=$this->param['top']) {
-			return false;
-		}
 		$this->count++;
 		$this->data[] = $data;
 	}

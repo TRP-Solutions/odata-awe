@@ -19,6 +19,7 @@ trait ODataAweParamTrait {
 		else {
 			$this->param['skip'] = 0;
 		}
+		$this->param['count'] = empty($input['$count']) ? false : true;
 
 		return [];
 	}
