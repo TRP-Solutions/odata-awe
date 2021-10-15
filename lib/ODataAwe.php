@@ -23,6 +23,9 @@ class ODataAwe {
 		if(!isset($this->options['namespace'])) {
 			$this->options['namespace'] = 'ODataAwe';
 		}
+		if(!isset($this->options['maxpagesize'])) {
+			$this->options['maxpagesize'] = 20000;
+		}
 	}
 
 	public function handle() {
@@ -48,6 +51,7 @@ class ODataAwe {
 			}
 		}
 
+		$this->Header(getallheaders());
 		$this->Param($_GET);
 		header('Content-type: application/json; odata.metadata=minimal');
 		header('OData-Version: 4.0');

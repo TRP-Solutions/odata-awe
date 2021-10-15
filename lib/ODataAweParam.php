@@ -12,8 +12,20 @@ trait ODataAweParamTrait {
 		$this->param['count'] = empty($input['$count']) ? false : true;
 		$this->param['select'] = empty($input['$select']) ? null : array_fill_keys(explode(',',$input['$select']),null);
 		$this->param['filter'] = empty($input['$filter']) ? [] : explode(' and ',$input['$filter']);
+	}
 
-		return [];
+	private function Header($headers) {
+		if(isset($headers['Prefer'])) {
+			$prefer = explode(',',$headers['Prefer']);
+			foreach($prefer as $item) {
+				if(strpos($item,'odata.maxpagesize')===0) {
+					$maxpagesize = (int) substr($item,strpos($item,'=')+1);
+					if($maxpagesize<$this->options['maxpagesize']) {
+						$this->options['maxpagesize'] = $maxpagesize;
+					}
+				}
+			}
+		}
 	}
 
 	public function getTop() {

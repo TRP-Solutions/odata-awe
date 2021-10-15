@@ -4,6 +4,7 @@ syslog(LOG_INFO,$_SERVER['REQUEST_URI']);
 
 $options = [
 	'rewritebase' => '/odata-awe/sample',
+	'maxpagesize' => 200,
 ];
 $odata = new ODataAwe($options);
 
