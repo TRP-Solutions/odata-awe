@@ -13,7 +13,7 @@ class ODataAwe {
 	private $options = null;
 	private $functions = [];
 	private $data = [];
-	private $count = 0;
+	private $count = null;
 
 	public function __construct($options = []) {
 		$this->options = $options;
@@ -85,7 +85,7 @@ class ODataAwe {
 
 		$json = [];
 		$json['@odata.context'] = $context;
-		if($this->param['count']) $json['@odata.count'] = $this->count;
+		if($this->param['count'] && $this->count!==null) $json['@odata.count'] = $this->count;
 		$json['value'] = $this->data;
 		echo json_encode($json,JSON_UNESCAPED_SLASHES);
 	}
@@ -99,7 +99,10 @@ class ODataAwe {
 	}
 
 	public function addData($data) {
-		$this->count++;
 		$this->data[] = $data;
+	}
+
+	public function setCount($count) {
+		$this->count = (int) $count;
 	}
 }

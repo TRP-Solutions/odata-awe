@@ -27,6 +27,7 @@ function Staff($odata) {
 		3 => 'Jonas',
 		6 => 'Thorbjørn',
 	];
+	$odata->setCount(4);
 
 	function line($id,$name) {
 		$return = [];
