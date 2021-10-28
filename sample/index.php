@@ -52,7 +52,11 @@ function Staff($odata) {
 		if($select) {
 			$line = array_intersect_key($line,$select);
 		}
-		$odata->addData($line);
+		$result = $odata->addData($line);
+		if($result===false) {
+			$odata->nextLink();
+			return;
+		}
 	}
 }
 

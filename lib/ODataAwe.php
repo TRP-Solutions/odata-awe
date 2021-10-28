@@ -14,6 +14,8 @@ class ODataAwe {
 	private $functions = [];
 	private $data = [];
 	private $count = null;
+	private $pagesize = 0;
+	private $nextlink = null;
 
 	public function __construct($options = []) {
 		$this->options = $options;
@@ -25,6 +27,9 @@ class ODataAwe {
 		}
 		if(!isset($this->options['maxpagesize'])) {
 			$this->options['maxpagesize'] = 20000;
+		}
+		else {
+			$this->options['maxpagesize'] = (int) $this->options['maxpagesize'];
 		}
 	}
 
@@ -85,11 +90,13 @@ class ODataAwe {
 
 		$context = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'].$this->options['rewritebase'];
 		if($entityset) $context .= '/'.$entityset;
-		$context .= $entityset ? '/$metadata#'.$entityset : '/$metadata';
 
 		$json = [];
-		$json['@odata.context'] = $context;
+		$json['@odata.context'] = $context.($entityset ? '/$metadata#'.$entityset : '/$metadata');
 		if($this->param['count'] && $this->count!==null) $json['@odata.count'] = $this->count;
+		if($this->nextlink) {
+			$json['@odata.nextLink'] = $context.'?'.$this->nextlink;
+		}
 		$json['value'] = $this->data;
 		echo json_encode($json,JSON_UNESCAPED_SLASHES);
 	}
@@ -103,7 +110,24 @@ class ODataAwe {
 	}
 
 	public function addData($data) {
-		$this->data[] = $data;
+		if($this->pagesize<$this->options['maxpagesize']) {
+			$this->pagesize++;
+			$this->data[] = $data;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public function nextLink() {
+		$array = $_GET;
+		if($this->param['top']) $array['$top'] = $this->param['top']-$this->pagesize;
+		$array['$skip'] = ((int) $this->param['skip']+$this->pagesize);
+		$variables = [];
+		foreach($array as $key => $value) {
+			$variables[] = $key.'='.urlencode($value);
+		}
+		$this->nextlink = implode('&',$variables);
 	}
 
 	public function setCount($count) {
