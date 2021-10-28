@@ -11,7 +11,15 @@ trait ODataAweParamTrait {
 		$this->param['skip'] = isset($input['$skip']) ? (int) $input['$skip'] : 0;
 		$this->param['count'] = empty($input['$count']) ? false : true;
 		$this->param['select'] = empty($input['$select']) ? null : array_fill_keys(explode(',',$input['$select']),null);
-		$this->param['filter'] = empty($input['$filter']) ? [] : explode(' and ',$input['$filter']);
+		$this->param['filter'] = [];
+		if(!empty($input['$filter'])) {
+			foreach(explode(' and ',$input['$filter']) as $value) {
+				$value = explode(' ',$value);
+				if(in_array($value[1],['gt','ge','lt','le','eq','ne'])) {
+					$this->param['filter'][] = [$value[0],$value[1],$value[2]];
+				}
+			}
+		}
 		$this->param['orderby'] = [];
 		if(!empty($input['$orderby'])) {
 			foreach(explode(',',$input['$orderby']) as $value) {
@@ -47,5 +55,8 @@ trait ODataAweParamTrait {
 	}
 	public function getOrderby() {
 		return $this->param['orderby'];
+	}
+	public function getFilter() {
+		return $this->param['filter'];
 	}
 }

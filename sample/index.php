@@ -25,8 +25,8 @@ function Staff($odata) {
 	// Test data creation
 	$data = [
 		1 => 'Jacob',
-		2 => 'Jesper',
-		3 => 'Jonas',
+		2 => 'Jonas',
+		3 => 'Jesper',
 		6 => 'Thorbjørn',
 	];
 
@@ -48,6 +48,22 @@ function Staff($odata) {
 		$data[$key] = line($key,$value);
 	}
 	// Test data end
+
+	// Filter
+	$filter = $odata->getFilter();
+	foreach($filter as $value) {
+		$data = array_filter($data, function($elem) use($value){
+			switch($value[1]) {
+				case 'gt': return $elem[$value[0]] > $value[2];
+				case 'ge': return $elem[$value[0]] >= $value[2];
+				case 'le': return $elem[$value[0]] <= $value[2];
+				case 'lt': return $elem[$value[0]] < $value[2];
+				case 'eq': return $elem[$value[0]] == $value[2];
+				case 'ne': return $elem[$value[0]] != $value[2];
+				default: return false;
+			}
+		});
+	}
 
 	// Set Count
 	$odata->setCount(sizeof($data));
