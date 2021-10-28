@@ -11,6 +11,7 @@ class ODataAwe {
 	use ODataAweParamTrait;
 
 	private $options = null;
+	private $entityset = null;
 	private $functions = [];
 	private $data = [];
 	private $count = null;
@@ -61,9 +62,9 @@ class ODataAwe {
 		header('Content-type: application/json; odata.metadata=minimal');
 		header('OData-Version: 4.0');
 
-		$entityset = !empty($path[0]) ? $path[0] : null;
+		$this->entityset = !empty($path[0]) ? $path[0] : null;
 
-		if($entityset===null) {
+		if($this->entityset===null) {
 			foreach($this->functions as $key => $function) {
 				$this->AddData([
 					'name' => $key,
@@ -73,26 +74,26 @@ class ODataAwe {
 			}
 		}
 		else {
-			if(isset($this->functions[$entityset])) {
-				if(is_callable($this->functions[$entityset]['callback'])) {
-					call_user_func($this->functions[$entityset]['callback'],$this);
+			if(isset($this->functions[$this->entityset])) {
+				if(is_callable($this->functions[$this->entityset]['callback'])) {
+					call_user_func($this->functions[$this->entityset]['callback'],$this);
 				}
 				else {
-					throw new Exception('Function: '.$this->functions[$entityset]['callback'].' is not callable');
+					throw new Exception('Function: '.$this->functions[$this->entityset]['callback'].' is not callable');
 				}
 			}
 			else {
-				echo 'EntitySet: '.$entityset.' is not fould';
+				echo 'EntitySet: '.$this->entityset.' is not fould';
 				http_response_code(404);
 				exit;
 			}
 		}
 
 		$context = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'].$this->options['rewritebase'];
-		if($entityset) $context .= '/'.$entityset;
+		if($this->entityset) $context .= '/'.$this->entityset;
 
 		$json = [];
-		$json['@odata.context'] = $context.($entityset ? '/$metadata#'.$entityset : '/$metadata');
+		$json['@odata.context'] = $context.($this->entityset ? '/$metadata#'.$this->entityset : '/$metadata');
 		if($this->param['count'] && $this->count!==null) $json['@odata.count'] = $this->count;
 		if($this->nextlink) {
 			$json['@odata.nextLink'] = $context.'?'.$this->nextlink;
@@ -132,5 +133,9 @@ class ODataAwe {
 
 	public function setCount($count) {
 		$this->count = (int) $count;
+	}
+
+	public function getEntitySet() {
+		return $this->entityset;
 	}
 }
