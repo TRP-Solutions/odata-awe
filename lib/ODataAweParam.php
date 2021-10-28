@@ -12,6 +12,14 @@ trait ODataAweParamTrait {
 		$this->param['count'] = empty($input['$count']) ? false : true;
 		$this->param['select'] = empty($input['$select']) ? null : array_fill_keys(explode(',',$input['$select']),null);
 		$this->param['filter'] = empty($input['$filter']) ? [] : explode(' and ',$input['$filter']);
+		$this->param['orderby'] = [];
+		if(!empty($input['$orderby'])) {
+			foreach(explode(',',$input['$orderby']) as $value) {
+				$value = explode(' ',$value);
+				$direction = (isset($value[1]) && $value[1]=='desc') ? SORT_DESC : SORT_ASC;
+				$this->param['orderby'][] = [$value[0],$direction];
+			}
+		}
 	}
 
 	private function Header($headers) {
@@ -36,5 +44,8 @@ trait ODataAweParamTrait {
 	}
 	public function getSelect() {
 		return $this->param['select'];
+	}
+	public function getOrderby() {
+		return $this->param['orderby'];
 	}
 }

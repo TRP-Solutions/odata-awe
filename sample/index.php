@@ -22,13 +22,13 @@ $field = [
 $odata->addFunction('Staff',$field);
 
 function Staff($odata) {
+	// Test data creation
 	$data = [
 		1 => 'Jacob',
 		2 => 'Jesper',
 		3 => 'Jonas',
 		6 => 'Thorbjørn',
 	];
-	$odata->setCount(4);
 
 	function line($id,$name) {
 		$return = [];
@@ -44,14 +44,36 @@ function Staff($odata) {
 		return $return;
 	}
 
-	$data = array_slice($data,$odata->getSkip(),$odata->getTop(),true);
-	$select = $odata->getSelect();
-
 	foreach($data as $key => $value) {
-		$line = line($key,$value);
+		$data[$key] = line($key,$value);
+	}
+	// Test data end
+
+	// Set Count
+	$odata->setCount(sizeof($data));
+
+	// Sorting
+	$orderby = $odata->getOrderby();
+	$multisort = [];
+	foreach($orderby as $value) {
+		$column = array_column($data,$value[0]);
+		$multisort[] = $column;
+		$multisort[] = $value[1];
+	}
+	$multisort[] = &$data;
+	array_multisort(...$multisort);
+
+	// Slice result
+	$data = array_slice($data,$odata->getSkip(),$odata->getTop(),true);
+
+	// Select columns
+	$select = $odata->getSelect();
+	foreach($data as $line) {
 		if($select) {
 			$line = array_intersect_key($line,$select);
 		}
+
+		// Add data
 		$result = $odata->addData($line);
 		if($result===false) {
 			$odata->nextLink();
