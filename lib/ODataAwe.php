@@ -112,9 +112,9 @@ class ODataAwe {
 
 	public function addData($data) {
 		if($this->pagesize<$this->options['maxpagesize']) {
-			$this->pagesize++;
-			foreach($data as $key => $value) {
-				if($this->entityset) {
+			if($this->entityset) {
+				$this->pagesize++;
+				foreach($data as $key => $value) {
 					switch($this->functions[$this->entityset]['field'][$key]['type']) {
 						case 'bool': $data[$key] = (bool) $value; continue 2;
 						case 'int': $data[$key] = (int) $value; continue 2;
