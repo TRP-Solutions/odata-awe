@@ -14,9 +14,11 @@ trait ODataAweParamTrait {
 		$this->param['filter'] = [];
 		if(!empty($input['$filter'])) {
 			foreach(explode(' and ',$input['$filter']) as $value) {
-				$value = explode(' ',$value);
-				if(in_array($value[1],['gt','ge','lt','le','eq','ne'])) {
-					$this->param['filter'][] = [$value[0],$value[1],$value[2]];
+				list($field,$ops,$value) = explode(' ',$value);
+				if(in_array($ops,['gt','ge','lt','le','eq','ne'])) {
+					if($value=="''") $value = '';
+					elseif($value=="null") $value = null;
+					$this->param['filter'][] = [$field,$ops,$value];
 				}
 			}
 		}
