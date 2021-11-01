@@ -113,6 +113,17 @@ class ODataAwe {
 	public function addData($data) {
 		if($this->pagesize<$this->options['maxpagesize']) {
 			$this->pagesize++;
+			foreach($data as $key => $value) {
+				if($this->entityset) {
+					switch($this->functions[$this->entityset]['field'][$key]['type']) {
+						case 'bool': $data[$key] = (bool) $value; continue 2;
+						case 'int': $data[$key] = (int) $value; continue 2;
+						case 'float': $data[$key] = (float) $value; continue 2;
+						case 'string': $data[$key] = (string) $value; continue 2;
+						case 'datetime': $data[$key] = (new Datetime($value))->format('c'); continue 2;
+					}
+				}
+			}
 			$this->data[] = $data;
 		}
 		else {

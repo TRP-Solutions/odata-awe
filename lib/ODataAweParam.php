@@ -45,7 +45,7 @@ trait ODataAweParamTrait {
 	}
 
 	public function getTop() {
-		return $this->param['top'];
+		return $this->param['top'] ? $this->param['top'] : $this->options['maxpagesize']+1;
 	}
 	public function getSkip() {
 		return $this->param['skip'];
