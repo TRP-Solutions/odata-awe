@@ -73,9 +73,10 @@ class ODataAweMySQL extends ODataAwe {
 		$offset = $odata->getSkip() ? 'OFFSET '.$odata->getSkip() : "";
 
 		// Set Count
-		$sql = "SELECT COUNT(*) as count
-			FROM $setup[database]
-			WHERE $where";
+		$sql = "SELECT COUNT(*) as count ";
+		$sql .= "FROM $setup[database] ";
+		if($setup['group']) $sql .= "GROUP BY ".implode(',',$setup['group']).' ';
+		$sql .= "WHERE $where ";
 		$query = $this->dbconn->query($sql);
 		$odata->setCount($query->fetch_assoc()['count']);
 
