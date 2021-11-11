@@ -9,10 +9,11 @@ class ODataAweMySQL extends ODataAwe {
 	private $dbconn = null;
 	private $database = [];
 
-	public function addMySQLQuery($entityset,$fields,$database,$sort,$where = []) {
+	public function addMySQLQuery($entityset,$fields,$database,$sort,$where = [],$group = []) {
 		$this->database[$entityset] = [
 			'database' => $database,
 			'fields' => $fields,
+			'group' => $group,
 			'sort' => $sort,
 			'where' => $where,
 		];
@@ -78,10 +79,11 @@ class ODataAweMySQL extends ODataAwe {
 		$query = $this->dbconn->query($sql);
 		$odata->setCount($query->fetch_assoc()['count']);
 
-		$sql = "SELECT $fields
-			FROM $setup[database]
-			WHERE $where
-			ORDER BY $sort $limit $offset";
+		$sql = "SELECT $fields ";
+		$sql .= "FROM $setup[database] ";
+		$sql .= "WHERE $where ";
+		if($setup['group']) $sql .= "GROUP BY ".implode(',',$setup['group']).' ';
+		$sql .= "ORDER BY $sort $limit $offset";
 		$query = $this->dbconn->query($sql);
 
 		while($rs = $query->fetch_assoc()) {
