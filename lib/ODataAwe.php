@@ -83,7 +83,7 @@ class ODataAwe {
 				}
 			}
 			else {
-				echo 'EntitySet: '.$this->entityset.' is not fould';
+				echo 'EntitySet: '.$this->entityset.' is not found';
 				http_response_code(404);
 				exit;
 			}
