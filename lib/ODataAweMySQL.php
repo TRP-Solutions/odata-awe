@@ -28,7 +28,7 @@ class ODataAweMySQL extends ODataAwe {
 		$fields = [];
 		foreach($setup['fields'] as $key => $value) {
 			if(!$select || array_key_exists($key,$select)) {
-				$fields[] = $value['dbfield'].' as '.$key;
+				$fields[] = $value['dbfield'].' as `'.$key.'`';
 			}
 		}
 		$fields = implode(',',$fields);
