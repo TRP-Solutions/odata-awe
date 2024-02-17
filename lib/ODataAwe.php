@@ -115,6 +115,9 @@ class ODataAwe {
 			if($this->entityset) {
 				$this->pagesize++;
 				foreach($data as $key => $value) {
+					if($value===null && isset($this->functions[$this->entityset]['field'][$key]['null'])) {
+						$data[$key] = null; continue 1;
+					}
 					switch($this->functions[$this->entityset]['field'][$key]['type']) {
 						case 'bool': $data[$key] = (bool) $value; continue 2;
 						case 'int': $data[$key] = (int) $value; continue 2;
