@@ -76,7 +76,7 @@ class ODataAwe {
 		else {
 			if(isset($this->functions[$this->entityset])) {
 				if(is_callable($this->functions[$this->entityset]['callback'])) {
-					call_user_func($this->functions[$this->entityset]['callback'],$this);
+					call_user_func($this->functions[$this->entityset]['callback'],$this,...$this->functions[$this->entityset]['param']);
 				}
 				else {
 					throw new Exception('Function: '.$this->functions[$this->entityset]['callback'].' is not callable');
@@ -102,11 +102,12 @@ class ODataAwe {
 		echo json_encode($json,JSON_UNESCAPED_SLASHES);
 	}
 
-	public function addFunction($name,$fields,$callback = null) {
+	public function addFunction($name,$fields,$callback = null,...$param) {
 		if($callback===null) $callback = $name;
 		$this->functions[$name] = [
 			'callback' => $callback,
 			'field' => $fields,
+			'param' => $param,
 		];
 	}
 

@@ -3,7 +3,7 @@ require_once __DIR__.'/../lib/ODataAwe.php';
 syslog(LOG_INFO,$_SERVER['REQUEST_URI']);
 
 $options = [
-	'rewritebase' => '/odata-awe/sample',
+	'rewritebase' => '/git_odata-awe/sample',
 	'maxpagesize' => 200,
 ];
 $odata = new ODataAwe($options);
@@ -19,9 +19,9 @@ $field = [
 	'Birthday' => ['type' => 'date'],
 	'Break' => ['type' => 'time'],
 ];
-$odata->addFunction('Staff',$field);
+$odata->addFunction('Staff',$field,'StaffFunction','Mr./Mrs.');
 
-function Staff($odata) {
+function StaffFunction($odata,$prefix) {
 	// Test data creation
 	$data = [
 		1 => 'Jacob',
@@ -45,7 +45,7 @@ function Staff($odata) {
 	}
 
 	foreach($data as $key => $value) {
-		$data[$key] = line($key,$value);
+		$data[$key] = line($key,$prefix.' '.$value);
 	}
 	// Test data end
 

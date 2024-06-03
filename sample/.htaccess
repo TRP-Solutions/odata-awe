@@ -1,5 +1,5 @@
 Options -MultiViews +FollowSymLinks
 
 RewriteEngine on
-RewriteBase /odata-awe/sample/
+RewriteBase /git_odata-awe/sample/
 RewriteRule . index.php [L]
